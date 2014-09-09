@@ -12,6 +12,13 @@ It's easiest to just show the functionality with a picture:
 
 I hope to generate some binaries some time soon.
 
+# Notes
+
+The parser, expression evaluation and half of the truth table logic is very nice code.
+The cli, equality and precedence code on the other hand is best left unseen; I hope to clean it up eventually.
+
+Anyhow, there are only 224 lines of code, so it should be quite easy to understand how it works.
+
 # Copyright and license
 Copyright (c) 2014 Andreas H. From
 
