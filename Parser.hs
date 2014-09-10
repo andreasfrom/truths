@@ -25,16 +25,12 @@ term :: Parser Formula
 term = (char '(' *> spaces *> expr <* char ')' <* spaces)
        <|> (Atom <$> T.pack <$> (some (oneOf (['a'..'u'] ++ ['w'..'z']))) <* spaces)
 
--- And, Or, Xor and Iff are associative so it doesn't matter which way they associate,
--- If associates to the right so p => q => r is interpreted as p => (q => r)
 table = [ [ prefix "¬!" Not ]
-        , [ binary "^&∧" And AssocLeft
-          , binary "v∨" Or AssocLeft
-          , binary "+⊕" Xor AssocLeft
-          ]
-        , [ composite ["=>", "->", "⇒"] If AssocRight
-          , composite ["<=>", "<->", "⇔"] Iff AssocLeft
-          ]
+        , [ binary "^&∧" And AssocLeft ]
+        , [ binary "v∨" Or AssocLeft ]
+        , [ binary "+⊕" Xor AssocLeft ]
+        , [ composite ["=>", "->", "⇒"] If AssocRight ]
+        , [ composite ["<=>", "<->", "⇔"] Iff AssocLeft ]
         ]
   where prefix s f = Prefix (oneOf s *> spaces *> pure f)
         binary s f = Infix (oneOf s *> spaces *> pure f)
