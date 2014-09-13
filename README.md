@@ -17,7 +17,7 @@ I hope to generate some binaries some time soon.
 The parser, expression evaluation and half of the truth table logic is very nice code.
 The cli and equality code on the other hand is best left unseen; I hope to clean it up eventually.
 
-Anyhow, there are only 174 lines of code, so it should be quite easy to understand how it works.
+Anyhow, there are only around 200 lines of code, so it should be quite easy to understand how it works.
 
 # Copyright and license
 Copyright (c) 2014 Andreas H. From
