@@ -11,17 +11,8 @@ import           Form
 import           Parser
 import           System.Console.Readline (addHistory, readline)
 import           System.Environment      (getArgs)
-
-newtype TruthTable = TruthTable [[T.Text]]
-
-instance Show TruthTable where
-  show = T.unpack . showTable
-
-showTable :: TruthTable -> T.Text
-showTable (TruthTable (header:rows)) = T.intercalate "\n" (T.intercalate "\t" header : (map go rows))
-  where go :: [T.Text] -> T.Text
-        go row = T.concat (zipWith (\col t -> col +++ T.concat (replicate t "\t")) row tabs)
-        tabs = map (succ . (`div` 8) . T.length) header
+import           System.Exit             (exitSuccess)
+import           Table
 
 assign :: Form T.Text -> Assignments -> Form Bool
 assign form as = fmap (fromJust . flip lookup as) form
@@ -74,7 +65,7 @@ main = putStrLn "Enter a proposition (or \"exit\"):" >> getArgs >>= fltr >>= \(t
   prop <- readline "> "
   case prop of
    Nothing -> return ()
-   Just "exit" -> return ()
+   Just "exit" -> exitSuccess
    Just line ->
      addHistory line >>
      case (parseInput (T.pack line)) of
