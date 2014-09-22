@@ -10,14 +10,8 @@ It's easiest to just show the functionality with a picture:
 
 # Download
 
-I hope to generate some binaries some time soon.
-
-# Code Notes
-
-The parser, expression evaluation and half of the truth table logic is very nice code.
-The cli and equality code on the other hand is best left unseen; I hope to clean it up eventually.
-
-Anyhow, there are only around 200 lines of code, so it should be quite easy to understand how it works.
+I unfortunately cant' seem to produce a working binary on anything but my own computer.
+The easiest thing is probably to compile it yourself at the moment, unfortunately.
 
 # Copyright and license
 Copyright (c) 2014 Andreas H. From
