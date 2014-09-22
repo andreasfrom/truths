@@ -12,10 +12,10 @@ import           Text.Parsec.Prim
 import           Text.Parsec.Text
 import           Text.Parser.Char
 
-data Input = Single Formula | Equality Formula Formula deriving (Show)
+data Input = Single Formula | Equivalence Formula Formula deriving (Show)
 
 input :: Parser Input
-input = try (Equality <$> expr <*> (spaces *> char '=' *> spaces *> expr) <* eof)
+input = try (Equivalence <$> expr <*> (spaces *> char '=' *> spaces *> expr) <* eof)
         <|> (Single <$> expr <* eof)
 
 expr :: Parser Formula

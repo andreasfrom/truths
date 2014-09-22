@@ -47,8 +47,8 @@ showBool t _ True = t
 showBool _ f False = f
 
 -- Needs cleaning up
-equal :: T.Text -> T.Text -> Formula -> Formula -> Either T.Text ()
-equal tr fa f g | length f' /= length g' =
+equivalent :: T.Text -> T.Text -> Formula -> Formula -> Either T.Text ()
+equivalent tr fa f g | length f' /= length g' =
               Left "the propositions contain a different number of atoms"
           | not (null zipped) =
               Left ("the propositions differ in the case(s) below:\n"
@@ -78,7 +78,7 @@ main = putStrLn "Enter a proposition (or \"exit\"):" >> getArgs >>= fltr >>= loo
              case (parseInput (T.pack line)) of
               Right prop' -> case prop' of
                               Single p -> (putStrLn $ T.unpack $ prettyTable t f p) >> loop (t, f)
-                              Equality p q -> (case (equal t f p q) of
+                              Equivalence p q -> (case (equivalent t f p q) of
                                                Left e -> putStrLn (T.unpack e)
                                                Right () -> putStrLn (T.unpack t)) >> loop (t, f)
               Left e -> print e >> loop (t, f)
