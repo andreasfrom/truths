@@ -4,7 +4,7 @@ module Parser(parseInput, Input(..)) where
 
 import           Control.Applicative    hiding (many, (<|>))
 import qualified Data.Text              as T
-import           Form
+import           Form                   hiding (AssocLeft, AssocRight)
 import           Text.Parsec.Combinator (choice, eof)
 import           Text.Parsec.Error      (ParseError)
 import           Text.Parsec.Expr
@@ -12,10 +12,16 @@ import           Text.Parsec.Prim
 import           Text.Parsec.Text
 import           Text.Parser.Char
 
-data Input = Single Formula | Equivalence Formula Formula deriving (Show)
+data Input = Single Formula
+           | Equivalence Formula Formula
+           | Context Formula
+           | Latex Formula
+           deriving (Show)
 
 input :: Parser Input
 input = try (Equivalence <$> expr <*> (spaces *> char '=' *> spaces *> expr) <* eof)
+        <|>  try (Context <$> (string "context" *> spaces *> expr <* eof))
+        <|>  try (Latex <$> (string "latex" *> spaces *> expr <* eof))
         <|> (Single <$> expr <* eof)
 
 expr :: Parser Formula
