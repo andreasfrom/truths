@@ -2,8 +2,9 @@
 
 module Table where
 
-import           Data.Maybe (fromJust)
-import qualified Data.Text  as T
+import           Data.Maybe  (fromJust)
+import           Data.Monoid ((<>))
+import qualified Data.Text   as T
 import           Form
 
 newtype TruthTable = TruthTable [[T.Text]]
@@ -13,7 +14,7 @@ instance Show TruthTable where
 
 showTable :: TruthTable -> T.Text
 showTable (TruthTable (header:rows)) = T.intercalate "\n" (T.intercalate "\t" header : (map go rows))
-  where go row = T.concat (zipWith (\col t -> col +++ T.concat (replicate t "\t")) row tabs)
+  where go row = T.concat (zipWith (\col t -> col <> T.concat (replicate t "\t")) row tabs)
         tabs = map (succ . (`div` 8) . T.length) header
 
 type ShowBool = Bool -> T.Text
@@ -36,27 +37,25 @@ buildTable showB showC form = TruthTable $ (atoms form ++ [showCustomForm showC 
 
 contextTable :: Formula -> T.Text
 contextTable form =
-  "\\starttabulate[|" +++ T.concat (replicate (length header) "c|") +++ "]\n"
-  +++ go header +++ " \\HL\n" +++ T.intercalate "\n" (map go rows)
-  +++ "\n\\stoptabulate"
+  "\\starttabulate[|" <> T.concat (replicate (length header) "c|") <> "]\n"
+  <> go header <> " \\HL\n" <> T.intercalate "\n" (map go rows)
+  <> "\n\\stoptabulate"
   where go [] = ""
-        go row = "  \\NC " +++ T.concat (map f (zip [0..] row)) +++ "\\NR"
-        f (n, col) = col +++ (if n == length header - 2 then " \\VL " else " \\NC ")
+        go row = "  \\NC " <> T.concat (map f (zip [0..] row)) <> "\\NR"
+        f (n, col) = col <> (if n == length header - 2 then " \\VL " else " \\NC ")
         TruthTable (header:rows) = buildTable contextBool latexConnective form
+        contextBool = showBool "{\\ss T}" "{\\ss F}"
+
 
 latexTable :: Formula -> T.Text
 latexTable form =
-  "\\begin{tabular}{" +++ T.init (T.concat (replicate (length header) "c|")) +++ "}\n"
-  +++ (T.init (T.init (go (init header)))) +++ " & $ " +++ (last header) +++ " $"  +++ " \\\\\\hline\n" +++ T.intercalate "\n" (map go rows)
-  +++ "\n\\end{tabular}"
+  "\\begin{tabular}{" <> T.init (T.concat (replicate (length header) "c|")) <> "}\n"
+  <> (T.init (T.init (go (init header)))) <> " & $ " <> (last header) <> " $"  <> " \\\\\\hline\n" <> T.intercalate "\n" (map go rows)
+  <> "\n\\end{tabular}"
   where go [] = ""
-        go row = "  " +++ T.concat (map (+++" & ") (init row)) +++ last row +++ "\\\\"
+        go row = "  " <> T.concat (map (<>" & ") (init row)) <> last row <> "\\\\"
         TruthTable (header:rows) = buildTable latexBool latexConnective form
         latexBool = showBool "\\textsf{T}" "\\textsf{F}"
-
-
-contextBool :: ShowBool
-contextBool = showBool "{\\ss T}" "{\\ss F}"
 
 latexConnective :: ShowConnective
 latexConnective (Not _) = "\\lnot "

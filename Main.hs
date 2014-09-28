@@ -3,6 +3,7 @@
 module Main where
 
 import           Control.Monad           (forever)
+import           Data.Monoid             ((<>))
 import qualified Data.Text               as T
 import           Form
 import           Parser
@@ -16,14 +17,14 @@ equivalent showB f g
   | length (table f) /= length (table g) = Left "the propositions contain a different number of atoms"
   | not (null different) =
       Left $ "the propositions differ in the cases below:\n"
-      +++ showTable (TruthTable ([zipWith name (atoms f) (atoms g) ++ [showForm f] ++ [showForm g]]
+      <> showTable (TruthTable ([zipWith name (atoms f) (atoms g) ++ [showForm f] ++ [showForm g]]
                                  ++ map (format . fst) different))
   | otherwise = Right ()
   where different = filter (not . snd) $ zipWith differ (table f) (table g)
         differ (as,b) (_,c) = ((as,b,c), b == c)
         format (fs,fb,gb) = (map (showB . snd) fs) ++ (map showB [fb,gb])
         name a b | a == b = a
-        name a b = a +++ "/" +++ b
+        name a b = a <> "/" <> b
 
 main :: IO ()
 main = putStrLn "Enter a proposition (or \"exit\"):" >> getArgs >>= fltr >>= \(t,f) -> forever $ do

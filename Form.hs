@@ -8,6 +8,7 @@ module Form where
 import           Control.Monad (replicateM)
 import qualified Data.Foldable as F
 import           Data.List     (nub)
+import           Data.Monoid   ((<>))
 import qualified Data.Text     as T
 
 type Assignments = [(T.Text, Bool)]
@@ -20,7 +21,7 @@ data Form a = Atom a
             | Xor (Form a) (Form a)
             | If (Form a) (Form a)
             | Iff (Form a) (Form a)
-            deriving (Functor, F.Foldable)
+            deriving (Functor, F.Foldable, Eq)
 
 atoms :: Form T.Text -> [T.Text]
 atoms = nub . F.foldr (++) [] . fmap (\x -> [x])
@@ -40,10 +41,6 @@ truth (Iff p q) = truth p == truth q
 instance Show (Formula) where
   show = T.unpack . showForm
 
-infixr 5 +++
-(+++) :: T.Text -> T.Text -> T.Text
-(+++) = T.append
-
 type ShowConnective = Formula -> T.Text
 symbolConnective :: ShowConnective
 symbolConnective (Not _) = "¬"
@@ -58,8 +55,8 @@ showForm = showCustomForm symbolConnective
 
 showCustomForm :: ShowConnective -> Formula -> T.Text
 showCustomForm _ (Atom p) = p
-showCustomForm showC o@(Not (Atom p)) = showC o +++ p
-showCustomForm showC (Not p) = "¬(" +++ showCustomForm showC p +++ ")"
+showCustomForm showC o@(Not (Atom p)) = showC o <> p
+showCustomForm showC (Not p) = "¬(" <> showCustomForm showC p <> ")"
 showCustomForm showC o@(And p q) = parens (showCustomForm showC) (grade o) (grade p) (showC o) (grade q)
 showCustomForm showC o@(Or p q)  = parens (showCustomForm showC) (grade o) (grade p) (showC o) (grade q)
 showCustomForm showC o@(Xor p q) = parens (showCustomForm showC) (grade o) (grade p) (showC o) (grade q)
@@ -92,7 +89,7 @@ parens showF (Precedence _ ol ot oa) (Precedence p pl pt _) op (Precedence q ql 
   | otherwise = boths showF p op q
 
 plains, lefts, rights, boths :: (Formula -> T.Text) -> Formula -> T.Text -> Formula -> T.Text
-plains showF p op q = showF p +++ op +++ showF q
-lefts showF p op q = "(" +++ showF p +++ ")" +++ op +++ showF q
-rights showF p op q = showF p +++ op +++ "(" +++ showF q +++ ")"
-boths showF p op q = "(" +++ showF p +++ ")" +++ op +++ "(" +++ showF q +++ ")"
+plains showF p op q = showF p <> op <> showF q
+lefts showF p op q = "(" <> showF p <> ")" <> op <> showF q
+rights showF p op q = showF p <> op <> "(" <> showF q <> ")"
+boths showF p op q = "(" <> showF p <> ")" <> op <> "(" <> showF q <> ")"
