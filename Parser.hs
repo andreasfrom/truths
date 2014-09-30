@@ -5,6 +5,7 @@ module Parser(parseInput, Input(..)) where
 import           Control.Applicative    hiding (many, (<|>))
 import qualified Data.Text              as T
 import           Form                   hiding (AssocLeft, AssocRight)
+import           Semtab
 import           Text.Parsec.Combinator (choice, eof)
 import           Text.Parsec.Error      (ParseError)
 import           Text.Parsec.Expr
@@ -16,13 +17,18 @@ data Input = Single Formula
            | Equivalence Formula Formula
            | Context Formula
            | Latex Formula
+           | Tableau FormTab
            deriving (Show)
 
 input :: Parser Input
 input = try (Equivalence <$> expr <*> (spaces *> char '=' *> spaces *> expr) <* eof)
-        <|>  try (Context <$> (string "context" *> spaces *> expr <* eof))
-        <|>  try (Latex <$> (string "latex" *> spaces *> expr <* eof))
+        <|> try (Context <$> (string "context" *> spaces *> expr <* eof))
+        <|> try (Latex <$> (string "latex" *> spaces *> expr <* eof))
+        <|> try (Tableau <$> (Case (Just 1) <$> (string "tab" *> optional (string "leau") *> spaces *> expr)
+                              <*> (toBool <$> (choice (map string ["T", "t", "1", "F", "f", "0"])))))
         <|> (Single <$> expr <* eof)
+  where toBool x | x == "T" || x == "t" || x == "1" = True
+                 | otherwise = False
 
 expr :: Parser Formula
 expr = buildExpressionParser table term

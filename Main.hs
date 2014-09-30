@@ -7,6 +7,7 @@ import           Data.Monoid             ((<>))
 import qualified Data.Text               as T
 import           Form
 import           Parser
+import           Semtab
 import           System.Console.Readline (addHistory, readline)
 import           System.Environment      (getArgs)
 import           System.Exit             (exitSuccess)
@@ -40,6 +41,7 @@ main = putStrLn "Enter a proposition (or \"exit\"):" >> getArgs >>= fltr >>= \(t
         Single p -> putStrLn $ show $ defaultTable (showBool t f) p
         Context p -> putStrLn $ T.unpack $ contextTable p
         Latex p -> putStrLn $ T.unpack $ latexTable p
+        Tableau tab -> renderTab "semtab.svg" tab
         Equivalence p q -> case equivalent (showBool t f) p q of
           Left e -> putStrLn $ T.unpack e
           Right () -> putStrLn $ T.unpack t
