@@ -25,7 +25,7 @@ tabToDia (Case n p t) _ = text' ((maybe "" ((<>". ") . T.pack . show) n) <> show
 tabToDia (Cons a b) indent = cat' (r2 (0,-1)) (with & sep .~ 0.5) [tabToDia a indent, tabToDia b indent]
 
 tabToDia (Rule q p@(Branch _ _) t n) indent =
-  (if n == 1 then tabToDia (Case (Just 1) q t) indent === strutY 0.5 else mempty)
+  (if n == 1 then strutY 1 === tabToDia (Case (Just 1) q t) indent === strutY 0.5 else mempty)
   ===
   (((if indent < 3 then (cat' (r2 (2,1)) (with & catMethod .~ Cat))
      else (cat' (r2 (0,1)) (with & catMethod .~ Distrib & sep .~ indent/4))) [tabToDia p indent, diaLabel q t n])
@@ -35,7 +35,7 @@ tabToDia (Rule q p@(Branch _ _) t n) indent =
        (r2 (indent*0.4,indent/2))) # translateX (-(indent/2)))
 
 tabToDia (Rule q p t n) indent =
-  (if n == 1 then tabToDia (Case (Just 1) q t) indent else mempty)
+  (if n == 1 then strutY 1 === tabToDia (Case (Just 1) q t) indent else mempty)
   === ((cat' (r2 (1,1)) (with & sep .~ 2 & catMethod .~ Distrib) [tabToDia p indent, diaLabel q t n])
        <> arrowV' (with & tailGap .~ (Local 0.5) & arrowHead .~ noHead) (r2 (0,2)))
 
@@ -46,7 +46,7 @@ diaLabel :: Formula -> Bool -> Int -> Diagram B R2
 diaLabel q t n = text' (symbolConnective q <> " " <> showBool "T" "F" t <> " " <> T.pack (show n))
 
 renderTab :: FilePath -> FormTab -> IO ()
-renderTab fp p = renderSVG fp (Height 600) (tabToDia (process p) 10)
+renderTab fp p = renderSVG fp (Dims 600 700) (strutX 1 ||| (tabToDia (process p) 10) ||| strutX 1)
 
 process :: FormTab -> FormTab
 process = openBranches . closeBranches . giveNumbers . reduceTab
