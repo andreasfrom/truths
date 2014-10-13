@@ -35,7 +35,7 @@ expr = buildExpressionParser table term
 
 term :: Parser Formula
 term = (char '(' *> spaces *> expr <* char ')' <* spaces)
-       <|> (Atom <$> T.pack <$> (some (oneOf (['a'..'u'] ++ ['w'..'z']))) <* spaces)
+       <|> (Atom <$> T.pack <$> (some (oneOf (['a'..'u'] ++ ['w'..'z'] ++ ['A'..'U'] ++ ['W'..'Z']))) <* spaces)
 
 table = [ [ prefix "¬!" Not ]
         , [ binary "^&∧" And AssocLeft ]
