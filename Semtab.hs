@@ -106,6 +106,7 @@ reduceTab c@(Branch a b)
   | isReducible b = reduceTab b
   | otherwise = c
 
+-- TODO: make it prefer getting atoms quickly
 rank :: FormTab -> Int
 rank (Case _ a t) = go a t
   where go (Not _) _ = 0

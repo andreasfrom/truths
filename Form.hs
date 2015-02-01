@@ -44,9 +44,9 @@ instance Show (Formula) where
 type ShowConnective = Formula -> T.Text
 symbolConnective :: ShowConnective
 symbolConnective (Not _) = "¬"
-symbolConnective (And _ _) = "∧"
-symbolConnective (Or _ _)  = "∨"
-symbolConnective (Xor _ _) = "⊕"
+symbolConnective (And _ _) = " ∧ "
+symbolConnective (Or _ _)  = " ∨ "
+symbolConnective (Xor _ _) = " ⊕ "
 symbolConnective (If _ _)  = " ⇒ "
 symbolConnective (Iff _ _) = " ⇔ "
 
