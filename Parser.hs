@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser(parseInput, Input(..)) where
+module Parser (parseInput, Input(..)) where
 
 import           Control.Applicative    hiding (many, (<|>))
 import qualified Data.Text              as T
@@ -48,5 +48,5 @@ table = [ [ prefix "¬!" Not ]
         binary s f = Infix (oneOf s *> spaces *> pure f)
         composite s f = Infix (choice (map (try . string) s) *> spaces *> pure f)
 
-parseInput :: T.Text -> Either ParseError (Input)
+parseInput :: T.Text -> Either ParseError Input
 parseInput = parse input ""

@@ -18,12 +18,11 @@ equivalent showB f g
   | length (table f) /= length (table g) = Left "the propositions contain a different number of atoms"
   | not (null different) =
       Left $ "the propositions differ in the cases below:\n"
-      <> showTable (TruthTable ([zipWith name (atoms f) (atoms g) ++ [showForm f] ++ [showForm g]]
-                                 ++ map (format . fst) different))
+      <> showTable (TruthTable ((zipWith name (atoms f) (atoms g) ++ [showForm f] ++ [showForm g]) : map (format . fst) different))
   | otherwise = Right ()
   where different = filter (not . snd) $ zipWith differ (table f) (table g)
         differ (as,b) (_,c) = ((as,b,c), b == c)
-        format (fs,fb,gb) = (map (showB . snd) fs) ++ (map showB [fb,gb])
+        format (fs,fb,gb) = map (showB . snd) fs ++ map showB [fb,gb]
         name a b | a == b = a
         name a b = a <> "/" <> b
 
@@ -35,10 +34,10 @@ main = putStrLn "Enter a proposition (or \"exit\"):" >> getArgs >>= fltr >>= \(t
    Just "exit" -> exitSuccess
    Just line ->
      addHistory line >>
-     case (parseInput (T.pack line)) of
+     case parseInput (T.pack line) of
       Left e -> print e
       Right prop' -> case prop' of
-        Single p -> putStrLn $ show $ defaultTable (showBool t f) p
+        Single p -> print $ defaultTable (showBool t f) p
         Context p -> putStrLn $ T.unpack $ contextTable p
         Latex p -> putStrLn $ T.unpack $ latexTable p
         Tableau tab -> renderTab "semtab.svg" tab

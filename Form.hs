@@ -24,7 +24,7 @@ data Form a = Atom a
             deriving (Functor, F.Foldable, Eq)
 
 atoms :: Form T.Text -> [T.Text]
-atoms = nub . F.foldr (++) [] . fmap (\x -> [x])
+atoms = nub . F.foldr (++) [] . fmap (: [])
 
 cases :: [T.Text] -> [Assignments]
 cases names = map (zip names) (replicateM (length names) [True, False])
